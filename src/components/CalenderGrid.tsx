@@ -4,12 +4,21 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type Dispatch,
 } from "react";
 import { getMonthGrid, type DayCell } from "../utils/calender";
-import CalenderElement from "./CalenderElement";
-import { addMonths, subMonths } from "date-fns";
+import CalendarElement from "./CalendarElement";
+import { addMonths, isSameMonth, subMonths } from "date-fns";
 
-export default function CalenderGrid() {
+interface CalenderGridProps {
+  currentMonth: Date;
+  setCurrentMonth: Dispatch<React.SetStateAction<Date>>;
+}
+
+export default function CalenderGrid({
+  currentMonth,
+  setCurrentMonth,
+}: CalenderGridProps) {
   const today = new Date();
 
   const [days, setDays] = useState<DayCell[]>(() => [...getMonthGrid(today)]);
@@ -61,7 +70,7 @@ export default function CalenderGrid() {
       200
     )
       loadMore("down");
-  }, [loadMore]);
+  }, [days, earliestMonth, latestMonth]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -78,15 +87,46 @@ export default function CalenderGrid() {
     }
   }, []);
 
+  useEffect(() => {
+    const div = containerRef.current;
+    if (!div) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const d = entry.target.getAttribute("data-date");
+            if (d) {
+              const dt = new Date(d);
+              if (dt.getDate() === 15) {
+                setCurrentMonth(dt);
+              }
+            }
+          }
+        });
+      },
+      { root: div, threshold: 0.6 }
+    );
+
+    const dateEls = div.querySelectorAll("[data-date]");
+    dateEls.forEach((el) => observer.observe(el));
+
+    return () => {
+      dateEls.forEach((el) => observer.unobserve(el));
+      observer.disconnect();
+    };
+  }, [days]);
+
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-7 gap-1 mt-25 p-4 h-screen overflow-scroll"
+      className="grid grid-cols-7 gap-1 px-4 h-screen overflow-scroll"
     >
       {days.map((day) => (
-        <CalenderElement
+        <CalendarElement
           ref={day.isToday ? todayRef : null}
           key={day.date.toString()}
+          isCurrentMonth={isSameMonth(day.date, currentMonth)}
           dayData={day}
         />
       ))}

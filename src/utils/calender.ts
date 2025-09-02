@@ -4,7 +4,6 @@ import {
   startOfWeek,
   endOfWeek,
   addDays,
-  isSameMonth,
   isToday,
   subMonths,
   addMonths,
@@ -12,7 +11,6 @@ import {
 
 export interface DayCell {
   date: Date;
-  isCurrentMonth: boolean;
   isToday: boolean;
 }
 
@@ -29,7 +27,6 @@ export const getMonthGrid = (date: Date): DayCell[] => {
   while (current <= end) {
     days.push({
       date: current,
-      isCurrentMonth: isSameMonth(current, new Date()),
       isToday: isToday(current),
     });
     current = addDays(current, 1);
