@@ -6,6 +6,8 @@ import {
   addDays,
   isSameMonth,
   isToday,
+  subMonths,
+  addMonths,
 } from "date-fns";
 
 export interface DayCell {
@@ -15,8 +17,11 @@ export interface DayCell {
 }
 
 export const getMonthGrid = (date: Date): DayCell[] => {
-  const start = startOfWeek(startOfMonth(date));
-  const end = endOfWeek(endOfMonth(date));
+  const prevMonth = subMonths(date, 1);
+  const nextMonth = addMonths(date, 1);
+
+  const start = startOfWeek(startOfMonth(prevMonth), { weekStartsOn: 0 });
+  const end = endOfWeek(endOfMonth(nextMonth), { weekStartsOn: 0 });
 
   const days: DayCell[] = [];
   let current = start;

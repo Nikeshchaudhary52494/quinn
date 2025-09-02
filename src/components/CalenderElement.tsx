@@ -1,12 +1,18 @@
+import type { RefObject } from "react";
 import type { DayCell } from "../utils/calender";
 
 interface CalenderElementProps {
   dayData: DayCell;
+  ref: RefObject<HTMLDivElement | null> | null;
 }
 
-export default function CalenderElement({ dayData }: CalenderElementProps) {
+export default function CalenderElement({
+  dayData,
+  ref,
+}: CalenderElementProps) {
   return (
     <div
+      ref={ref}
       className={`rounded-md font-bold text-6xl flex justify-center items-center  aspect-[2/3] 
         ${
           dayData.isToday
