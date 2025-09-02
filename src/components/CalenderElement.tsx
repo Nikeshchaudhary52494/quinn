@@ -9,7 +9,7 @@ import JournalCard from "./JournalCard";
 
 interface CalendarElementProps {
   dayData: DayCell;
-  ref?: RefObject<HTMLDivElement | null>;
+  ref: RefObject<HTMLDivElement | null> | null;
 }
 
 export default function CalendarElement({
@@ -47,11 +47,11 @@ export default function CalendarElement({
       <div
         ref={ref}
         onClick={() => journal && setOpenIndex(journalIndex)}
-        className={`rounded-md font-bold text-6xl flex justify-center items-center aspect-[2/3] cursor-pointer
+        className={`rounded-md md:font-semibold md:text-6xl hover:bg-blue-300 hover:text-white  flex justify-center items-center md:aspect-[2/3] aspect-[1/2] cursor-pointer
           ${
             dayData.isToday
-              ? "border-blue-400 border-4"
-              : "hover:bg-blue-300 hover:text-white duration-200 transition-colors"
+              ? "border-blue-500 border-4 text-blue-500"
+              : "duration-200 transition-colors"
           }
           ${dayData.isCurrentMonth ? "bg-blue-100" : "bg-gray-100"}
         `}
@@ -90,10 +90,10 @@ export default function CalendarElement({
             >
               <ChevronRight size={28} />
             </button>
-
-            <div className="relative w-full max-w-3xl flex items-center h-full justify-center overflow-hidden">
+            <div className="relative w-full max-w-3xl flex items-center h-[90vh] justify-center overflow-hidden">
               <AnimatePresence custom={direction} initial={false}>
                 <JournalCard
+                  key={openIndex}
                   entry={journalData[openIndex]}
                   direction={direction}
                   handlePrev={handlePrev}

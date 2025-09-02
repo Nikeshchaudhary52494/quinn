@@ -73,7 +73,7 @@ export default function CalenderGrid() {
 
   useLayoutEffect(() => {
     if (todayRef.current && !hasScrolledToToday.current) {
-      todayRef.current.scrollIntoView({ behavior: "instant", block: "center" });
+      todayRef.current.scrollIntoView({ behavior: "instant" });
       hasScrolledToToday.current = true;
     }
   }, []);
