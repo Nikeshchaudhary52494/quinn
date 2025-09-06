@@ -6,12 +6,15 @@ function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   return (
-    <div className="h-screen">
+    <div className="h-screen flex flex-col">
       <Header currentMonth={currentMonth} />
-      <CalenderGrid
-        currentMonth={currentMonth}
-        setCurrentMonth={setCurrentMonth}
-      />
+
+      <div className="flex-1 overflow-y-auto">
+        <CalenderGrid
+          currentMonth={currentMonth}
+          setCurrentMonth={setCurrentMonth}
+        />
+      </div>
     </div>
   );
 }

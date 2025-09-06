@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -42,10 +41,15 @@ export default function CalenderGrid({
 
         setDays((prev) => [...newDays, ...prev]);
 
-        setTimeout(() => {
+        requestAnimationFrame(() => {
+          if (!container) return;
+
           const newScrollHeight = container.scrollHeight;
-          container.scrollTop += newScrollHeight - prevScrollHeight;
-        }, 0);
+          const newTop =
+            container.scrollTop + (newScrollHeight - prevScrollHeight);
+
+          container.scrollTop = newTop;
+        });
       }
 
       setEarliestMonth(newMonth);
@@ -59,26 +63,34 @@ export default function CalenderGrid({
     }
   };
 
-  const handleScroll = useCallback(() => {
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    if (container.scrollTop < 200) loadMore("up");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (entry.target.id === "top-sentinel") {
+              loadMore("up");
+            }
+            if (entry.target.id === "bottom-sentinel") {
+              loadMore("down");
+            }
+          }
+        });
+      },
+      { root: container, threshold: 0.6 }
+    );
 
-    if (
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      200
-    )
-      loadMore("down");
+    const topSentinel = document.getElementById("top-sentinel");
+    const bottomSentinel = document.getElementById("bottom-sentinel");
+
+    if (topSentinel) observer.observe(topSentinel);
+    if (bottomSentinel) observer.observe(bottomSentinel);
+
+    return () => observer.disconnect();
   }, [days, earliestMonth, latestMonth]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
-    }
-  }, [handleScroll]);
 
   useLayoutEffect(() => {
     if (todayRef.current && !hasScrolledToToday.current) {
@@ -120,8 +132,10 @@ export default function CalenderGrid({
   return (
     <div
       ref={containerRef}
-      className="grid grid-cols-7 gap-1 px-4 h-screen overflow-scroll"
+      className="grid grid-cols-7 px-4 h-screen overflow-y-scroll"
     >
+      <div id="top-sentinel" className="col-span-7 h-[1px]" />
+
       {days.map((day) => (
         <CalendarElement
           ref={day.isToday ? todayRef : null}
@@ -130,6 +144,8 @@ export default function CalenderGrid({
           dayData={day}
         />
       ))}
+
+      <div id="bottom-sentinel" className="col-span-7 h-[1px]" />
     </div>
   );
 }

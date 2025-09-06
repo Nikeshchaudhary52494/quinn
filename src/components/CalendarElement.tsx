@@ -46,20 +46,20 @@ const CalendarElement = forwardRef<HTMLDivElement, CalendarElementProps>(
           ref={ref}
           data-date={dayData.date.toISOString()}
           onClick={() => journal && setOpenIndex(journalIndex)}
-          className={`rounded-md md:font-semibold md:text-6xl scroll-mt-[120px] hover:bg-blue-300 hover:text-white flex justify-center items-center md:aspect-[2/3] aspect-[1/2] cursor-pointer
+          className={`md:font-semibold md:text-6xl border scroll-mt-[120px] hover:bg-blue-300  hover:text-white flex justify-center items-center md:aspect-square aspect-[1/2] cursor-pointer
             ${
               dayData.isToday
                 ? "border-blue-500 border-4 text-blue-500"
-                : "duration-200 transition-colors"
+                : "duration-200 transition-colors border-gray-400 text-gray-500"
             }
-            ${isCurrentMonth ? "bg-blue-100" : "bg-gray-100"}
+            ${isCurrentMonth && "bg-blue-100"}
           `}
         >
           {journal ? (
             <img
               src={journal.imgUrl}
               alt="journal"
-              className="w-full h-full object-cover rounded-md"
+              className="w-full h-full object-cover"
             />
           ) : (
             <span>{dayData.date.getDate()}</span>
